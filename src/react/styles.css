@@ -1,0 +1,1291 @@
+/* md-editor styles. Everything is driven by --rmds-* custom properties so a
+   host app can restyle without touching these rules. */
+
+/*
+ * Theme variable scope, split out from .rmds-root so it can be re-established
+ * independently wherever content portals outside the .rmds-root DOM subtree
+ * (popovers render into document.body via createPortal — see Popover.tsx).
+ * Without this, var(--rmds-bg) etc. resolve to nothing outside .rmds-root and
+ * silently fall back to their CSS-initial value (transparent for background,
+ * `black`-ish `currentcolor` for the others), so a portaled popover would be
+ * see-through and mismatched with the editor's current light/dark theme.
+ */
+.rmds-root,
+.rmds-theme-scope {
+  --rmds-font-ui: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --rmds-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+  --rmds-bg: #ffffff;
+  --rmds-bg-subtle: #f6f8fa;
+  --rmds-bg-inset: #f6f8fa;
+  --rmds-border: #d0d7de;
+  --rmds-border-subtle: #eaeef2;
+  --rmds-text: #1f2328;
+  --rmds-text-muted: #59636e;
+  --rmds-accent: #0969da;
+  --rmds-accent-contrast: #ffffff;
+  --rmds-focus-ring: #57606a;
+  --rmds-danger: #cf222e;
+
+  --rmds-alert-note-fg: #0969da;
+  --rmds-alert-tip-fg: #1a7f37;
+  --rmds-alert-important-fg: #8250df;
+  --rmds-alert-warning-fg: #9a6700;
+  --rmds-alert-caution-fg: #cf222e;
+
+  --rmds-tok-plain: #24292f;
+  --rmds-tok-keyword: #cf222e;
+  --rmds-tok-type: #953800;
+  --rmds-tok-string: #0a3069;
+  --rmds-tok-comment: #6e7781;
+  --rmds-tok-number: #0550ae;
+  --rmds-tok-function: #8250df;
+  --rmds-tok-operator: #cf222e;
+  --rmds-tok-punctuation: #24292f;
+  --rmds-tok-tag: #116329;
+  --rmds-tok-attr: #953800;
+  --rmds-tok-variable: #953800;
+  --rmds-tok-boolean: #0550ae;
+  --rmds-tok-property: #0550ae;
+  --rmds-tok-inserted: #116329;
+  --rmds-tok-deleted: #82071e;
+  --rmds-tok-meta: #8250df;
+  --rmds-code-bg: #f6f8fa;
+
+  --rmds-radius: 6px;
+  --rmds-radius-sm: 4px;
+}
+
+.rmds-root {
+  color: var(--rmds-text);
+  font-family: var(--rmds-font-ui);
+  background: var(--rmds-bg);
+  border: 1px solid var(--rmds-border);
+  border-radius: var(--rmds-radius);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.rmds-root *,
+.rmds-root *::before,
+.rmds-root *::after,
+.rmds-theme-scope *,
+.rmds-theme-scope *::before,
+.rmds-theme-scope *::after {
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  .rmds-root:not([data-theme="light"]),
+  .rmds-theme-scope:not([data-theme="light"]) {
+    --rmds-bg: #0d1117;
+    --rmds-bg-subtle: #161b22;
+    --rmds-bg-inset: #161b22;
+    --rmds-border: #30363d;
+    --rmds-border-subtle: #21262d;
+    --rmds-text: #e6edf3;
+    --rmds-text-muted: #8b949e;
+    --rmds-accent: #4493f8;
+    --rmds-accent-contrast: #0d1117;
+    --rmds-focus-ring: #8b949e;
+    --rmds-danger: #ff7b72;
+
+    --rmds-alert-note-fg: #4493f8;
+    --rmds-alert-tip-fg: #3fb950;
+    --rmds-alert-important-fg: #ab7df8;
+    --rmds-alert-warning-fg: #d29922;
+    --rmds-alert-caution-fg: #ff7b72;
+
+    --rmds-tok-plain: #e6edf3;
+    --rmds-tok-keyword: #ff7b72;
+    --rmds-tok-type: #ffa657;
+    --rmds-tok-string: #a5d6ff;
+    --rmds-tok-comment: #8b949e;
+    --rmds-tok-number: #79c0ff;
+    --rmds-tok-function: #d2a8ff;
+    --rmds-tok-operator: #ff7b72;
+    --rmds-tok-punctuation: #e6edf3;
+    --rmds-tok-tag: #7ee787;
+    --rmds-tok-attr: #ffa657;
+    --rmds-tok-variable: #ffa657;
+    --rmds-tok-boolean: #79c0ff;
+    --rmds-tok-property: #79c0ff;
+    --rmds-tok-inserted: #aff5b4;
+    --rmds-tok-deleted: #ffdcd7;
+    --rmds-tok-meta: #d2a8ff;
+    --rmds-code-bg: #161b22;
+  }
+}
+.rmds-root[data-theme="dark"],
+.rmds-theme-scope[data-theme="dark"] {
+  --rmds-bg: #0d1117;
+  --rmds-bg-subtle: #161b22;
+  --rmds-bg-inset: #161b22;
+  --rmds-border: #30363d;
+  --rmds-border-subtle: #21262d;
+  --rmds-text: #e6edf3;
+  --rmds-text-muted: #8b949e;
+  --rmds-accent: #4493f8;
+  --rmds-accent-contrast: #0d1117;
+  --rmds-focus-ring: #8b949e;
+  --rmds-danger: #ff7b72;
+
+  --rmds-alert-note-fg: #4493f8;
+  --rmds-alert-tip-fg: #3fb950;
+  --rmds-alert-important-fg: #ab7df8;
+  --rmds-alert-warning-fg: #d29922;
+  --rmds-alert-caution-fg: #ff7b72;
+
+  --rmds-tok-plain: #e6edf3;
+  --rmds-tok-keyword: #ff7b72;
+  --rmds-tok-type: #ffa657;
+  --rmds-tok-string: #a5d6ff;
+  --rmds-tok-comment: #8b949e;
+  --rmds-tok-number: #79c0ff;
+  --rmds-tok-function: #d2a8ff;
+  --rmds-tok-operator: #ff7b72;
+  --rmds-tok-punctuation: #e6edf3;
+  --rmds-tok-tag: #7ee787;
+  --rmds-tok-attr: #ffa657;
+  --rmds-tok-variable: #ffa657;
+  --rmds-tok-boolean: #79c0ff;
+  --rmds-tok-property: #79c0ff;
+  --rmds-tok-inserted: #aff5b4;
+  --rmds-tok-deleted: #ffdcd7;
+  --rmds-tok-meta: #d2a8ff;
+  --rmds-code-bg: #161b22;
+}
+
+.rmds-root.rmds-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  border-radius: 0;
+  height: 100% !important;
+  min-height: 0 !important;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Host-app isolation                                                      */
+/*                                                                         */
+/* Host apps ship global CSS (Vite's starter index.css/App.css, Tailwind's */
+/* preflight, CSS resets, ...). Those rules inherit into the editor or win */
+/* on specificity, e.g. `#root { text-align: center }`, `button:hover {    */
+/* border-color }`, `a:hover { color }`, `ul { list-style: none }`.        */
+/* This block gives every editor subtree a known baseline. It uses         */
+/* `:where()` for the element part so it only has class-level specificity  */
+/* (0,1,0): it beats element selectors in the host, but every component    */
+/* rule below (same specificity, declared later) still wins over it.       */
+/* ---------------------------------------------------------------------- */
+
+.rmds-root,
+.rmds-theme-scope {
+  text-align: left;
+  text-indent: 0;
+  text-transform: none;
+  text-shadow: none;
+  letter-spacing: normal;
+  word-spacing: normal;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  white-space: normal;
+  /* Native scrollbars / form controls follow the editor theme, not the page's. */
+  color-scheme: light dark;
+}
+.rmds-root[data-theme="light"],
+.rmds-theme-scope[data-theme="light"] {
+  color-scheme: light;
+}
+.rmds-root[data-theme="dark"],
+.rmds-theme-scope[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+:is(.rmds-root, .rmds-theme-scope) :where(button, input, select, textarea) {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: none;
+  margin: 0;
+}
+:is(.rmds-root, .rmds-theme-scope) :where(button) {
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0;
+  border: 0 solid transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  transition: none;
+}
+/* Host `button:hover { border-color }` and `button:focus { outline }` have
+   specificity (0,1,1); these are (0,2,0). Buttons that show a border set
+   --rmds-btn-bc so hover/focus/active keep it. */
+:is(.rmds-root, .rmds-theme-scope) :where(button):is(:hover, :focus, :active) {
+  border-color: var(--rmds-btn-bc, transparent);
+  outline: none;
+  box-shadow: none;
+}
+.rmds-copy-btn,
+.rmds-table-picker-cell {
+  --rmds-btn-bc: var(--rmds-border);
+}
+.rmds-toolbar-btn.rmds-active,
+.rmds-table-picker-cell.rmds-active {
+  --rmds-btn-bc: var(--rmds-text);
+}
+.rmds-copy-btn.rmds-copied {
+  --rmds-btn-bc: currentColor;
+}
+
+.rmds-root :focus-visible,
+.rmds-theme-scope :focus-visible {
+  outline: 2px solid var(--rmds-focus-ring);
+  outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rmds-root *,
+  .rmds-theme-scope * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Toolbar                                                                 */
+/* ---------------------------------------------------------------------- */
+
+.rmds-toolbar {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid var(--rmds-border);
+  background: var(--rmds-bg-subtle);
+}
+
+.rmds-toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+  padding: 6px;
+  /* Explicit on both axes: an auto value on only one axis makes browsers
+     force the other to `auto` too, which would clip/scroll popovers that
+     are descendants of this row. Our popovers portal out to <body> so this
+     is now just hygiene, not the fix itself — see Popover.tsx. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+.rmds-toolbar-row + .rmds-toolbar-row {
+  border-top: 1px solid var(--rmds-border-subtle);
+}
+.rmds-toolbar-row-utility {
+  min-height: 44px;
+}
+
+.rmds-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+  padding-right: 4px;
+  margin-right: 4px;
+  border-right: 1px solid var(--rmds-border-subtle);
+}
+.rmds-toolbar-group:last-of-type {
+  border-right: none;
+}
+
+.rmds-toolbar-spacer {
+  flex: 1 1 auto;
+  min-width: 8px;
+}
+
+.rmds-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  border: 1px solid transparent;
+  border-radius: var(--rmds-radius-sm);
+  background: transparent;
+  color: var(--rmds-text);
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  font-family: inherit;
+}
+.rmds-toolbar-btn:hover:not(:disabled) {
+  background: var(--rmds-border-subtle);
+}
+.rmds-toolbar-btn.rmds-active {
+  background: var(--rmds-text);
+  color: var(--rmds-bg);
+  border-color: var(--rmds-text);
+}
+.rmds-toolbar-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.rmds-glyph-btn {
+  font-size: 14px;
+  width: 32px;
+}
+.rmds-text-btn {
+  width: auto;
+  padding: 0 8px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.rmds-code-lang-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.rmds-code-lang-trigger {
+  gap: 4px;
+  padding: 0 8px;
+}
+.rmds-code-lang-trigger-label {
+  font-size: 12px;
+  max-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rmds-lang-menu {
+  max-height: 280px;
+  overflow-y: auto;
+}
+.rmds-menu-item-selected {
+  background: var(--rmds-border-subtle);
+  font-weight: 600;
+}
+
+.rmds-view-controls {
+  border-right: none;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Popovers (table picker, alert menu)                                    */
+/* ---------------------------------------------------------------------- */
+
+.rmds-popover {
+  z-index: 2147483001;
+  background: var(--rmds-bg);
+  border: 1px solid var(--rmds-border);
+  border-radius: var(--rmds-radius);
+  box-shadow: 0 8px 24px rgba(140, 149, 159, 0.3);
+  padding: 8px;
+  max-height: min(360px, calc(100vh - 24px));
+  overflow-y: auto;
+}
+.rmds-help-popover {
+  width: min(420px, calc(100vw - 24px));
+  max-height: min(70vh, 560px);
+}
+.rmds-help-panel {
+  padding: 4px;
+}
+.rmds-help-intro {
+  margin: 0 0 10px;
+  font-size: 12.5px;
+  color: var(--rmds-text-muted);
+  line-height: 1.5;
+}
+.rmds-help-intro code {
+  font-family: var(--rmds-font-mono);
+  background: var(--rmds-code-bg);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+}
+.rmds-help-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.rmds-help-table td {
+  padding: 4px 6px;
+  border-top: 1px solid var(--rmds-border-subtle);
+  vertical-align: top;
+}
+.rmds-help-table tr:first-child td {
+  border-top: none;
+}
+.rmds-help-table td:last-child {
+  color: var(--rmds-text-muted);
+}
+.rmds-help-table code {
+  font-family: var(--rmds-font-mono);
+  font-size: 0.95em;
+  background: var(--rmds-code-bg);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.rmds-menu {
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  padding: 4px;
+}
+.rmds-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 6px 8px;
+  border-radius: var(--rmds-radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--rmds-text);
+  font-family: inherit;
+}
+.rmds-menu-item:hover {
+  background: var(--rmds-border-subtle);
+}
+.rmds-heading-menu-item-1 {
+  font-size: 15px;
+  font-weight: 700;
+}
+.rmds-heading-menu-item-2 {
+  font-size: 14px;
+  font-weight: 700;
+}
+.rmds-heading-menu-item-3 {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.rmds-heading-menu-item-4 {
+  font-size: 13px;
+  font-weight: 600;
+}
+.rmds-heading-menu-item-5 {
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.rmds-heading-menu-item-6 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--rmds-text-muted);
+}
+.rmds-alert-menu-item::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  background: currentColor;
+}
+.rmds-alert-menu-item.rmds-alert-note {
+  color: var(--rmds-alert-note-fg);
+}
+.rmds-alert-menu-item.rmds-alert-tip {
+  color: var(--rmds-alert-tip-fg);
+}
+.rmds-alert-menu-item.rmds-alert-important {
+  color: var(--rmds-alert-important-fg);
+}
+.rmds-alert-menu-item.rmds-alert-warning {
+  color: var(--rmds-alert-warning-fg);
+}
+.rmds-alert-menu-item.rmds-alert-caution {
+  color: var(--rmds-alert-caution-fg);
+}
+
+.rmds-table-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 16px);
+  grid-template-rows: repeat(8, 16px);
+  gap: 2px;
+}
+.rmds-table-picker-cell {
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 1px solid var(--rmds-border);
+  border-radius: 2px;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+.rmds-table-picker-cell.rmds-active {
+  background: var(--rmds-text);
+  border-color: var(--rmds-text);
+}
+.rmds-table-picker-label {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--rmds-text-muted);
+  text-align: center;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Table contextual tools                                                 */
+/* ---------------------------------------------------------------------- */
+
+.rmds-table-tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  background: var(--rmds-bg-subtle);
+  border-bottom: 1px solid var(--rmds-border);
+  overflow-x: auto;
+  flex-wrap: nowrap;
+}
+.rmds-table-tools-label {
+  font-size: 12px;
+  color: var(--rmds-text-muted);
+  margin-right: 4px;
+  white-space: nowrap;
+}
+.rmds-table-tools-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--rmds-border);
+  margin: 0 2px;
+  flex: 0 0 auto;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Body / panes                                                           */
+/* ---------------------------------------------------------------------- */
+
+.rmds-body {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.rmds-mode-split .rmds-edit-pane,
+.rmds-mode-split .rmds-preview-pane {
+  flex: 1 1 50%;
+  min-width: 0;
+}
+.rmds-mode-split .rmds-edit-pane {
+  border-right: 1px solid var(--rmds-border);
+}
+.rmds-mode-edit .rmds-edit-pane,
+.rmds-mode-preview .rmds-preview-pane {
+  flex: 1 1 100%;
+}
+
+.rmds-edit-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.rmds-textarea-wrap {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.rmds-gutter {
+  flex: 0 0 auto;
+  overflow: hidden;
+  padding: 12px 0;
+  text-align: right;
+  background: var(--rmds-bg-subtle);
+  border-right: 1px solid var(--rmds-border-subtle);
+  color: var(--rmds-text-muted);
+  font-family: var(--rmds-font-mono);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.rmds-gutter-line {
+  padding: 0 10px;
+  min-width: 2.2em;
+}
+.rmds-gutter-line-active {
+  color: var(--rmds-text);
+  font-weight: 600;
+}
+
+.rmds-textarea {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  resize: none;
+  border: none;
+  outline: none;
+  padding: 12px 14px;
+  background: var(--rmds-bg);
+  color: var(--rmds-text);
+  font-family: var(--rmds-font-mono);
+  font-size: 14px;
+  line-height: 1.6;
+  tab-size: 2;
+}
+.rmds-textarea-nowrap {
+  white-space: pre;
+  overflow-x: auto;
+}
+.rmds-textarea::placeholder {
+  color: var(--rmds-text-muted);
+}
+.rmds-textarea:disabled {
+  opacity: 0.6;
+}
+
+.rmds-editor-copy-btn {
+  z-index: 1;
+}
+
+.rmds-preview {
+  padding: 16px 20px;
+  overflow-y: auto;
+  min-width: 0;
+}
+.rmds-preview-pane {
+  overflow-y: auto;
+}
+
+.rmds-html-pane {
+  flex: 1 1 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  background: var(--rmds-code-bg);
+}
+.rmds-html-view {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 4px 20px 16px;
+  color: var(--rmds-tok-plain);
+  font-family: var(--rmds-font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.rmds-html-copy-btn.rmds-html-copy-btn {
+  position: static;
+  align-self: flex-end;
+  margin: 10px 10px 0 0;
+  opacity: 1;
+  flex-shrink: 0;
+}
+
+.rmds-viewer-root {
+  display: block;
+  border: none;
+  overflow: visible;
+}
+.rmds-viewer-root .rmds-preview {
+  /* padding: 0; */
+}
+
+/* Mobile: below the breakpoint, split mode becomes a switchable single pane. */
+.rmds-mobile-tabs {
+  display: none;
+  gap: 4px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--rmds-border);
+  background: var(--rmds-bg-subtle);
+}
+@media (max-width: 640px) {
+  .rmds-mode-split {
+    flex-direction: column;
+  }
+  .rmds-mode-split .rmds-edit-pane {
+    border-right: none;
+  }
+  .rmds-mode-split[data-mobile-pane="edit"] .rmds-preview-pane {
+    display: none;
+  }
+  .rmds-mode-split[data-mobile-pane="preview"] .rmds-edit-pane {
+    display: none;
+  }
+  .rmds-mobile-tabs[data-visible="true"] {
+    display: flex;
+  }
+  .rmds-toolbar-btn {
+    min-width: 40px;
+    height: 40px;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Rendered content                                                       */
+/* ---------------------------------------------------------------------- */
+
+.rmds-content,
+.rmds-preview {
+  color: var(--rmds-text);
+  font-size: 15px;
+  line-height: 1.65;
+  word-wrap: break-word;
+}
+
+.rmds-heading {
+  position: relative;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 1.4em 0 0.6em;
+}
+.rmds-heading:first-child {
+  margin-top: 0;
+}
+.rmds-h1 {
+  font-size: 1.8em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--rmds-border-subtle);
+}
+.rmds-h2 {
+  font-size: 1.4em;
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid var(--rmds-border-subtle);
+}
+.rmds-h3 {
+  font-size: 1.2em;
+}
+.rmds-h4 {
+  font-size: 1.05em;
+}
+.rmds-h5 {
+  font-size: 0.95em;
+}
+.rmds-h6 {
+  font-size: 0.9em;
+  color: var(--rmds-text-muted);
+}
+.rmds-heading-anchor {
+  position: absolute;
+  left: -1.1em;
+  color: var(--rmds-text-muted);
+  text-decoration: none;
+  opacity: 0;
+  font-weight: 400;
+}
+.rmds-heading-anchor::before {
+  content: "#";
+}
+.rmds-heading:hover .rmds-heading-anchor,
+.rmds-heading-anchor:focus-visible {
+  opacity: 1;
+}
+.rmds-heading-anchor:visited,
+.rmds-heading-anchor:hover,
+.rmds-heading-anchor:focus,
+.rmds-heading-anchor:active {
+  color: var(--rmds-text-muted);
+}
+
+.rmds-p {
+  margin: 0.7em 0;
+}
+
+.rmds-hr {
+  border: none;
+  border-top: 1px solid var(--rmds-border);
+  margin: 1.6em 0;
+}
+
+.rmds-blockquote {
+  margin: 0.8em 0;
+  padding: 0 1em;
+  border-left: 3px solid var(--rmds-border);
+  color: var(--rmds-text-muted);
+}
+.rmds-blockquote > *:first-child {
+  margin-top: 0;
+}
+.rmds-blockquote > *:last-child {
+  margin-bottom: 0;
+}
+
+.rmds-alert {
+  margin: 0.8em 0;
+  padding: 10px 14px;
+  border-left: 3px solid currentColor;
+  border-radius: 0 var(--rmds-radius-sm) var(--rmds-radius-sm) 0;
+  background: var(--rmds-bg-subtle);
+}
+.rmds-alert-note {
+  color: var(--rmds-alert-note-fg);
+}
+.rmds-alert-tip {
+  color: var(--rmds-alert-tip-fg);
+}
+.rmds-alert-important {
+  color: var(--rmds-alert-important-fg);
+}
+.rmds-alert-warning {
+  color: var(--rmds-alert-warning-fg);
+}
+.rmds-alert-caution {
+  color: var(--rmds-alert-caution-fg);
+}
+.rmds-alert-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.9em;
+}
+.rmds-alert-body {
+  color: var(--rmds-text);
+  margin-top: 4px;
+  font-size: 0.95em;
+}
+.rmds-alert-body > *:first-child {
+  margin-top: 0;
+}
+.rmds-alert-body > *:last-child {
+  margin-bottom: 0;
+}
+
+.rmds-details {
+  margin: 0.8em 0;
+  border: 1px solid var(--rmds-border);
+  border-radius: var(--rmds-radius);
+  padding: 0.6em 1em;
+}
+.rmds-details[open] {
+  padding-bottom: 0.8em;
+}
+.rmds-summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0.2em 0;
+  list-style: none;
+}
+.rmds-summary::-webkit-details-marker {
+  display: none;
+}
+.rmds-summary::before {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-right: 8px;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 6px solid var(--rmds-text-muted);
+  transition: transform 0.1s ease;
+  vertical-align: middle;
+}
+.rmds-details[open] > .rmds-summary::before {
+  transform: rotate(90deg);
+}
+.rmds-summary:hover {
+  text-decoration: underline;
+}
+.rmds-details-body {
+  margin-top: 0.6em;
+  padding-top: 0.6em;
+  border-top: 1px solid var(--rmds-border-subtle);
+}
+.rmds-details-body > *:first-child {
+  margin-top: 0;
+}
+.rmds-details-body > *:last-child {
+  margin-bottom: 0;
+}
+
+.rmds-list {
+  margin: 0.6em 0;
+  padding-left: 1.6em;
+  list-style-position: outside;
+}
+.rmds-list-unordered {
+  list-style-type: disc;
+}
+.rmds-list-unordered .rmds-list-unordered {
+  list-style-type: circle;
+}
+.rmds-list-unordered .rmds-list-unordered .rmds-list-unordered {
+  list-style-type: square;
+}
+.rmds-list-ordered {
+  list-style-type: decimal;
+}
+.rmds-list .rmds-list {
+  margin: 0.2em 0;
+}
+.rmds-li {
+  margin: 0.2em 0;
+}
+.rmds-checklist-item {
+  list-style: none;
+  margin-left: -1.4em;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+}
+.rmds-checkbox {
+  margin: 0;
+  transform: translateY(1px);
+  accent-color: var(--rmds-accent);
+}
+.rmds-checkbox:not(:disabled) {
+  cursor: pointer;
+}
+.rmds-li-content {
+  min-width: 0;
+}
+
+.rmds-table-wrapper {
+  overflow-x: auto;
+  margin: 0.8em 0;
+}
+.rmds-table {
+  border-collapse: collapse;
+  width: max-content;
+  min-width: 100%;
+  font-size: 0.95em;
+}
+.rmds-table th,
+.rmds-table td {
+  border: 1px solid var(--rmds-border);
+  padding: 6px 12px;
+}
+.rmds-table th {
+  background: var(--rmds-bg-subtle);
+  font-weight: 600;
+}
+
+.rmds-link {
+  color: var(--rmds-accent);
+  text-decoration: none;
+  font-weight: inherit;
+}
+.rmds-link:visited,
+.rmds-link:hover,
+.rmds-link:focus,
+.rmds-link:active {
+  color: var(--rmds-accent);
+}
+.rmds-link:hover {
+  text-decoration: underline;
+}
+
+.rmds-image {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+  border-radius: var(--rmds-radius-sm);
+}
+
+.rmds-inline-code {
+  font-family: var(--rmds-font-mono);
+  font-size: 0.87em;
+  background: var(--rmds-code-bg);
+  padding: 0.15em 0.4em;
+  border-radius: var(--rmds-radius-sm);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Code blocks / groups                                                   */
+/* ---------------------------------------------------------------------- */
+
+.rmds-code-block {
+  position: relative;
+  margin: 0.8em 0;
+  border-radius: var(--rmds-radius);
+  overflow: hidden;
+  border: 1px solid var(--rmds-border-subtle);
+}
+.rmds-code-title {
+  padding: 6px 12px;
+  font-size: 0.8em;
+  color: var(--rmds-text-muted);
+  background: var(--rmds-bg-subtle);
+  border-bottom: 1px solid var(--rmds-border-subtle);
+  font-family: var(--rmds-font-mono);
+}
+.rmds-pre {
+  margin: 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+  background: var(--rmds-code-bg);
+}
+.rmds-code {
+  font-family: var(--rmds-font-mono);
+  font-size: 0.87em;
+  line-height: 1.6;
+  color: var(--rmds-tok-plain);
+  white-space: pre;
+}
+.rmds-copy-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--rmds-border);
+  background: var(--rmds-bg);
+  color: var(--rmds-text-muted);
+  padding: 0;
+  border-radius: var(--rmds-radius-sm);
+  cursor: pointer;
+  opacity: 0.75;
+  font-family: inherit;
+}
+.rmds-copy-btn:hover,
+.rmds-copy-btn:focus-visible {
+  opacity: 1;
+  background: var(--rmds-border-subtle);
+  color: var(--rmds-text);
+}
+.rmds-copy-btn.rmds-copied {
+  opacity: 1;
+  color: var(--rmds-alert-tip-fg);
+  border-color: currentColor;
+}
+
+.rmds-tok-keyword {
+  color: var(--rmds-tok-keyword);
+}
+.rmds-tok-type {
+  color: var(--rmds-tok-type);
+}
+.rmds-tok-string {
+  color: var(--rmds-tok-string);
+}
+.rmds-tok-comment {
+  color: var(--rmds-tok-comment);
+  font-style: italic;
+}
+.rmds-tok-number {
+  color: var(--rmds-tok-number);
+}
+.rmds-tok-function {
+  color: var(--rmds-tok-function);
+}
+.rmds-tok-operator {
+  color: var(--rmds-tok-operator);
+}
+.rmds-tok-punctuation {
+  color: var(--rmds-tok-punctuation);
+}
+.rmds-tok-tag {
+  color: var(--rmds-tok-tag);
+}
+.rmds-tok-attr {
+  color: var(--rmds-tok-attr);
+}
+.rmds-tok-variable {
+  color: var(--rmds-tok-variable);
+}
+.rmds-tok-boolean {
+  color: var(--rmds-tok-boolean);
+}
+.rmds-tok-property {
+  color: var(--rmds-tok-property);
+}
+.rmds-tok-inserted {
+  color: var(--rmds-tok-inserted);
+  background: rgba(46, 160, 67, 0.15);
+  display: inline-block;
+  width: 100%;
+}
+.rmds-tok-deleted {
+  color: var(--rmds-tok-deleted);
+  background: rgba(248, 81, 73, 0.15);
+  display: inline-block;
+  width: 100%;
+}
+.rmds-tok-meta {
+  color: var(--rmds-tok-meta);
+}
+
+.rmds-code-group {
+  margin: 0.8em 0;
+  border: 1px solid var(--rmds-border-subtle);
+  border-radius: var(--rmds-radius);
+  overflow: hidden;
+}
+.rmds-code-group .rmds-code-block {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+}
+.rmds-code-group-tabs {
+  display: flex;
+  overflow-x: auto;
+  background: var(--rmds-bg-subtle);
+  border-bottom: 1px solid var(--rmds-border-subtle);
+}
+.rmds-code-group-tab {
+  flex: 0 0 auto;
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  color: var(--rmds-text-muted);
+  font-size: 0.85em;
+  font-family: var(--rmds-font-mono);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+.rmds-code-group-tab.rmds-active {
+  color: var(--rmds-text);
+  border-bottom-color: var(--rmds-text);
+}
+.rmds-code-group-panel[hidden] {
+  display: none;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Print / "download as PDF"                                              */
+/* ---------------------------------------------------------------------- */
+
+/* There is no bundled PDF library (zero runtime dependencies), so
+   "download as PDF" uses the browser's own print dialog against a
+   dedicated render of the preview. That render is portaled straight to
+   document.body — see the `printContainer` portal in MarkdownEditor.tsx —
+   rather than living inside .rmds-root, so it escapes whatever layout the
+   host page puts around the editor (a heading above it, a footer below it,
+   a sidebar next to it, ...). `.rmds-print-root` is that portal's container;
+   `.rmds-print-only` is the wrapper rendered inside it. Both stay hidden
+   outside of an actual print, so nothing ever flashes on screen while the
+   print dialog is opening. This block only ever affects an actual print. */
+.rmds-print-only {
+  display: none;
+}
+
+@media print {
+  /* Force a plain light appearance regardless of the on-screen theme —
+     printed documents should be black-on-white, not whatever the reader
+     had their editor set to. This needs !important: .rmds-print-only lives
+     outside .rmds-root's DOM subtree (see above), so it also carries
+     .rmds-theme-scope to reach these variables at all (see the "Theme
+     variable scope" comment near the top of this file), and without
+     !important its declarations here can lose on *specificity* — not just
+     source order — to the .rmds-theme-scope:not([data-theme="light"])
+     dark-mode-preference rule when the reader's OS is in dark mode. */
+  :root,
+  .rmds-print-only {
+    --rmds-bg: #ffffff !important;
+    --rmds-bg-subtle: #f6f8fa !important;
+    --rmds-bg-inset: #f6f8fa !important;
+    --rmds-border: #d0d7de !important;
+    --rmds-border-subtle: #eaeef2 !important;
+    --rmds-text: #1f2328 !important;
+    --rmds-text-muted: #57606a !important;
+    --rmds-accent: #0969da !important;
+    --rmds-code-bg: #f6f8fa !important;
+    --rmds-tok-plain: #24292f !important;
+    --rmds-tok-keyword: #cf222e !important;
+    --rmds-tok-type: #953800 !important;
+    --rmds-tok-string: #0a3069 !important;
+    --rmds-tok-comment: #6e7781 !important;
+    --rmds-tok-number: #0550ae !important;
+    --rmds-tok-function: #8250df !important;
+    --rmds-tok-operator: #cf222e !important;
+    --rmds-tok-punctuation: #24292f !important;
+    --rmds-tok-tag: #116329 !important;
+    --rmds-tok-attr: #953800 !important;
+    --rmds-tok-variable: #953800 !important;
+    --rmds-tok-boolean: #0550ae !important;
+    --rmds-tok-property: #0550ae !important;
+    --rmds-tok-inserted: #116329 !important;
+    --rmds-tok-deleted: #82071e !important;
+    --rmds-tok-meta: #8250df !important;
+    --rmds-alert-note-fg: #0969da !important;
+    --rmds-alert-tip-fg: #1a7f37 !important;
+    --rmds-alert-important-fg: #8250df !important;
+    --rmds-alert-warning-fg: #9a6700 !important;
+    --rmds-alert-caution-fg: #cf222e !important;
+  }
+  /* Hide the entire host page — whatever it is, however .rmds-root is
+     nested inside it — and show only the dedicated print portal, but ONLY while
+     an export is running (body.rmds-printing, set by the editor for the
+     duration of its own print). Unscoped, this rule blanked every printed
+     page of any app that merely imported the stylesheet. Scoping
+     this at the body level, rather than the old ".rmds-root > *", is what
+     makes it correct for a reusable, embeddable editor: .rmds-root is
+     rarely a direct child of <body>, so hiding only its own siblings left
+     every ancestor's OTHER children (a page header above the editor, a
+     footer below it, a sidebar next to it, ...) fully visible in the
+     printed output. */
+  body.rmds-printing > *:not(.rmds-print-root) {
+    display: none !important;
+  }
+  .rmds-print-root {
+    display: block !important;
+  }
+  .rmds-print-only {
+    display: block !important;
+    color: var(--rmds-text);
+    background: var(--rmds-bg);
+  }
+  .rmds-print-only .rmds-preview-pane,
+  .rmds-print-only .rmds-preview {
+    overflow: visible !important;
+    height: auto !important;
+    padding: 0 !important;
+  }
+  .rmds-heading {
+    break-after: avoid;
+  }
+  .rmds-code-block,
+  .rmds-code-group,
+  .rmds-table-wrapper,
+  .rmds-blockquote,
+  .rmds-alert,
+  .rmds-details {
+    break-inside: avoid;
+  }
+  .rmds-copy-btn {
+    display: none !important;
+  }
+}
+
+/* ── Status bar ─────────────────────────────────────────────────────────── */
+.rmds-statusbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  padding: 4px 12px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--rmds-text-muted);
+  background: var(--rmds-bg-subtle);
+  border-top: 1px solid var(--rmds-border);
+  font-variant-numeric: tabular-nums;
+}
+.rmds-statusbar-spacer {
+  flex: 1 1 auto;
+}
+@media print {
+  .rmds-statusbar {
+    display: none;
+  }
+}
+
+/* ── Export menu ────────────────────────────────────────────────────────── */
+.rmds-export-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: baseline;
+  white-space: nowrap;
+}
+.rmds-export-hint {
+  font-size: 11px;
+  color: var(--rmds-text-muted);
+}

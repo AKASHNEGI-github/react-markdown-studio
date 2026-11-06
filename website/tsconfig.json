@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["vite/client", "node"],
+    "paths": {
+      "react-markdown-studio": ["../src/index.ts"],
+      "react-markdown-studio/core": ["../src/core/index.ts"]
+    }
+  },
+  "include": ["src", "vite.config.ts", "../tests/website.test.tsx"]
+}

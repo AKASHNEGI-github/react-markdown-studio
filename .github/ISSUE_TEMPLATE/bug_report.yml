@@ -1,0 +1,30 @@
+name: Bug report
+description: Something does not work as documented
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you see instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: The smallest Markdown input and props that show the problem. A link to the website playground (Copy share link) is ideal.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: react-markdown-studio version
+      placeholder: "1.0.0"
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: React, browser and OS
+      placeholder: "React 19, Chrome 130, macOS 15"

@@ -1,0 +1,10 @@
+node_modules/
+dist/
+dist-demo/
+website/dist/
+website/src/generated/.vitest-report.json
+*.tgz
+.DS_Store
+.env.local
+coverage/
+website/dist-ssr/

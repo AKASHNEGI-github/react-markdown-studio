@@ -1,0 +1,11 @@
+dist
+node_modules
+website/dist
+website/dist-ssr
+website/src/generated
+package-lock.json
+docs/SYNTAX.md
+CHANGELOG.md
+*.png
+*.svg
+*.md

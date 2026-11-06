@@ -1,0 +1,57 @@
+import { buildRules, kwSet, type LanguageDef } from "../engine";
+
+const keywords = kwSet([
+  "public",
+  "private",
+  "protected",
+  "class",
+  "interface",
+  "extends",
+  "implements",
+  "static",
+  "final",
+  "void",
+  "return",
+  "if",
+  "else",
+  "for",
+  "while",
+  "do",
+  "switch",
+  "case",
+  "default",
+  "break",
+  "continue",
+  "new",
+  "this",
+  "super",
+  "try",
+  "catch",
+  "finally",
+  "throw",
+  "throws",
+  "import",
+  "package",
+  "null",
+  "instanceof",
+  "enum",
+  "abstract",
+  "synchronized",
+  "volatile",
+  "transient",
+]);
+const types = kwSet(["int", "String", "boolean", "double", "float", "long", "short", "byte", "char", "Object", "var"]);
+const booleans = kwSet(["true", "false"]);
+
+export const java: LanguageDef = {
+  name: "Java",
+  aliases: ["java"],
+  rules: buildRules({
+    lineComment: ["//"],
+    blockComment: [["/*", "*/"]],
+    strings: [/"(?:\\.|[^"\\\n])*"/y, /'(?:\\.|[^'\\\n])*'/y],
+    keywords,
+    types,
+    booleans,
+  }),
+};

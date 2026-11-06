@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>React Markdown Studio: the zero-dependency Markdown editor for React</title>
+    <meta
+      name="description"
+      content="Split-view live preview, GitHub-style alerts, tabbed code groups, smart tables and a security-hardened renderer in one tiny, SSR-safe, TypeScript-first React package. Try the live playground."
+    />
+    <meta name="author" content="Akash Negi" />
+    <meta
+      name="keywords"
+      content="react markdown editor, markdown editor, react, typescript, live preview, markdown renderer, ssr, zero dependency"
+    />
+    <meta name="theme-color" content="#4f46e5" />
+    <link rel="canonical" href="%VITE_SITE_URL%" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="React Markdown Studio" />
+    <meta property="og:title" content="React Markdown Studio: the zero-dependency Markdown editor for React" />
+    <meta
+      property="og:description"
+      content="Live preview, GitHub-style alerts, tabbed code groups and a security-hardened renderer. Zero dependencies. Try it in your browser."
+    />
+    <meta property="og:url" content="%VITE_SITE_URL%" />
+    <meta property="og:image" content="%VITE_SITE_URL%og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="React Markdown Studio" />
+    <meta
+      name="twitter:description"
+      content="The zero-dependency Markdown editor for React. Try the live playground."
+    />
+    <meta name="twitter:image" content="%VITE_SITE_URL%og-image.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareSourceCode",
+        "name": "React Markdown Studio",
+        "description": "Zero-dependency, security-hardened Markdown editor and renderer for React.",
+        "codeRepository": "https://github.com/AKASHNEGI-github/react-markdown-studio",
+        "programmingLanguage": "TypeScript",
+        "license": "https://opensource.org/licenses/MIT",
+        "author": { "@type": "Person", "name": "Akash Negi", "url": "https://github.com/AKASHNEGI-github" }
+      }
+    </script>
+    <script>
+      // Apply the saved/OS theme before first paint so the page never flashes the wrong colours.
+      (function () {
+        try {
+          var t = localStorage.getItem("rmds-site-theme");
+          if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          document.documentElement.dataset.theme = t;
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript
+      >React Markdown Studio is a React editor, so this page needs JavaScript. Source and docs:
+      https://github.com/AKASHNEGI-github/react-markdown-studio</noscript
+    >
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

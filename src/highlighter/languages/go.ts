@@ -1,0 +1,61 @@
+import { buildRules, kwSet, type LanguageDef } from "../engine";
+
+const keywords = kwSet([
+  "func",
+  "package",
+  "import",
+  "return",
+  "if",
+  "else",
+  "for",
+  "range",
+  "switch",
+  "case",
+  "default",
+  "break",
+  "continue",
+  "var",
+  "const",
+  "type",
+  "struct",
+  "interface",
+  "map",
+  "chan",
+  "go",
+  "defer",
+  "select",
+  "nil",
+  "make",
+  "new",
+  "fallthrough",
+  "goto",
+]);
+const types = kwSet([
+  "int",
+  "string",
+  "bool",
+  "float64",
+  "float32",
+  "byte",
+  "rune",
+  "error",
+  "int8",
+  "int16",
+  "int32",
+  "int64",
+  "uint",
+]);
+const booleans = kwSet(["true", "false"]);
+
+export const go: LanguageDef = {
+  name: "Go",
+  aliases: ["go", "golang"],
+  rules: buildRules({
+    lineComment: ["//"],
+    blockComment: [["/*", "*/"]],
+    strings: [/"(?:\\.|[^"\\\n])*"/y, /`[^`]*`/y],
+    keywords,
+    types,
+    booleans,
+  }),
+};

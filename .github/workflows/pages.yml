@@ -1,0 +1,49 @@
+name: Deploy website
+
+on:
+  push:
+    branches: [main]
+    paths: ["website/**", "src/**", "package.json", "docs/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Optional repository variables (Settings > Secrets and variables > Actions > Variables):
+      #   VITE_SITE_URL           public URL of the site, with a trailing slash
+      #   VITE_GOATCOUNTER_CODE   GoatCounter site code, for the live visit counter
+      - name: Apply site variables
+        run: |
+          [ -n "${{ vars.VITE_SITE_URL }}" ] && echo "VITE_SITE_URL=${{ vars.VITE_SITE_URL }}" >> "$GITHUB_ENV" || true
+          [ -n "${{ vars.VITE_GOATCOUNTER_CODE }}" ] && echo "VITE_GOATCOUNTER_CODE=${{ vars.VITE_GOATCOUNTER_CODE }}" >> "$GITHUB_ENV" || true
+      - run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: website/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
